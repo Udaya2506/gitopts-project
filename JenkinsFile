@@ -2,7 +2,7 @@ pipeline {
     agent any
 
      environment {
-	        APP_NAME = "gitops-Demo-project"
+	        APP_NAME = "gitops-demo-project"
             RELEASE = "1.0.0"
             DOCKER_USER = "udayalakshmi95"
             DOCKER_PASS =  'dockerpassword'
@@ -21,21 +21,21 @@ pipeline {
     
         stage("code checkout"){
             steps{
-                git branch: 'main', credentialsId: 'githubpassword', url: 'https://github.com/Udaya2506/gitopts-project.git'
+                git branch: 'master', credentialsId: 'githubpassword', url: 'https://github.com/Udaya2506/gitopts-project.git'
             }
         }
-        stage("Build & Push Docker Image") {
+        stage("Build and push image") {
             steps {
-                script {
-
-                    docker_image = docker.build "${IMAGE_NAME}"
-                    sh "echo docker_image"
-                    
-
-                    docker.withRegistry('',DOCKER_PASS) 
-                    docker_image.push("${IMAGE_TAG}")
-                    docker_image.push('latest')
+               script {
+                    docker.withRegistry('',DOCKER_PASS) {
+                        docker_image = docker.build "${IMAGE_NAME}"
                     }
+
+                    docker.withRegistry('',DOCKER_PASS) {
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
+                    }
+                }
                 }
             }
 
